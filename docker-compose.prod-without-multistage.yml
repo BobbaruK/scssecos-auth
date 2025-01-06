@@ -1,0 +1,60 @@
+services:
+  webapp-prod-no-multi:
+    container_name: webapp-auth-v2-prod-no-multi
+    build:
+      context: ./webapp
+      dockerfile: /docker/prod-without-multistage.Dockerfile
+      args:
+        TEST_VAR: ${TEST_VAR}
+        SECRET_VAR: ${SECRET_VAR}
+        DB_USER: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD}
+        DB_HOST: ${DB_HOST}
+        DB_PORT: ${DB_PORT}
+        DB_NAME: ${DB_NAME}
+        DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public"
+        NEXT_PUBLIC_DEFAULT_REGISTER_PASSWORD: ${NEXT_PUBLIC_DEFAULT_REGISTER_PASSWORD}
+        AUTH_SECRET: ${AUTH_SECRET}
+        AUTH_TRUST_HOST: ${AUTH_TRUST_HOST}
+        GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+        GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+        GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+        RESEND_API_KEY: ${RESEND_API_KEY}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+        NEXTAUTH_URL: ${NEXT_PUBLIC_APP_URL}
+    environment:
+      TEST_VAR: ${TEST_VAR}
+      SECRET_VAR: ${SECRET_VAR}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public"
+      NEXT_PUBLIC_DEFAULT_REGISTER_PASSWORD: ${NEXT_PUBLIC_DEFAULT_REGISTER_PASSWORD}
+      AUTH_SECRET: ${AUTH_SECRET}
+      AUTH_TRUST_HOST: ${AUTH_TRUST_HOST}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+      NEXTAUTH_URL: ${NEXT_PUBLIC_APP_URL}
+    restart: always
+    ports:
+      - 3000:3000
+
+  db:
+    image: postgres:16-alpine
+    container_name: postgres-auth-v2
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      TZ: Europe/Bucharest
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/var/lib/postgresql/data
