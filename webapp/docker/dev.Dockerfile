@@ -13,7 +13,7 @@ RUN \
   fi
 
 
-# COPY prisma ./prisma
+COPY prisma ./prisma
 COPY public ./public
 COPY src ./src
 COPY eslint.config.mjs .
@@ -24,7 +24,7 @@ COPY postcss.config.mjs .
 COPY tailwind.config.ts .
 COPY tsconfig.json .
 
-# RUN npx prisma generate
+RUN npx prisma generate
 
 # Next.js collects completely anonymous telemetry data about general usage. Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line to disable telemetry at run time

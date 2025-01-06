@@ -16,7 +16,7 @@ RUN \
   else echo "Warning: Lockfile not found. It is recommended to commit lockfiles to version control." && yarn install; \
   fi
 
-# COPY prisma ./prisma
+COPY prisma ./prisma
 COPY public ./public
 COPY src ./src
 COPY eslint.config.mjs .

@@ -13,7 +13,7 @@ RUN \
   else echo "Warning: Lockfile not found. It is recommended to commit lockfiles to version control." && yarn install; \
   fi
 
-# COPY prisma ./prisma
+COPY prisma ./prisma
 COPY public ./public
 COPY src ./src
 COPY eslint.config.mjs .
@@ -71,7 +71,7 @@ ARG NEXTAUTH_URL=${NEXTAUTH_URL}
 
 # Build Next.js based on the preferred package manager
 
-# RUN npx prisma generate
+RUN npx prisma generate
 
 RUN \
   if [ -f yarn.lock ]; then yarn build; \
