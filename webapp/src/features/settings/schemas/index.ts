@@ -1,0 +1,1 @@
+export { SettingsSchema } from "./settings";
