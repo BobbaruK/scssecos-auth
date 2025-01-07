@@ -4,25 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { admin } from "@/features/auth/actions";
 import { FormSuccess, RoleGate } from "@/features/auth/components";
-import { useToast } from "@/hooks/use-toast";
 import { UserRole } from "@prisma/client";
+import { toast } from "sonner";
 
 const AdminPage = () => {
-  const { toast } = useToast();
-
   const onApiRouteClick = () => {
     fetch("/api/admin").then((res) => {
       if (res.ok) {
-        toast({
-          title: "API Route Test",
-          description: "Allow API Route!",
-        });
+        toast.success("Allow API Route!");
       } else {
-        toast({
-          title: "API Route Test",
-          description: "Forbidden API Route!",
-          variant: "destructive",
-        });
+        toast.error("Forbidden API Route!");
       }
     });
   };
@@ -30,16 +21,9 @@ const AdminPage = () => {
   const onServerActionClick = () => {
     admin().then((data) => {
       if (data.success) {
-        toast({
-          title: "Server Action Test",
-          description: "Allow Server Action!",
-        });
+        toast.success("Allow Server Action!");
       } else {
-        toast({
-          title: "Server Action Test",
-          description: "Forbidden Server Action!",
-          variant: "destructive",
-        });
+        toast.error("Forbidden Server Action!");
       }
     });
   };
