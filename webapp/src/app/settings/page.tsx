@@ -32,13 +32,12 @@ import { useSession } from "next-auth/react";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { toast } from "sonner";
 
 const SettingsPage = () => {
   const user = useCurrentUser();
 
-  const [success, setSuccess] = useState<string | undefined>();
   const [error, setError] = useState<string | undefined>();
-  const { update } = useSession();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof SettingsSchema>>({
@@ -54,25 +53,24 @@ const SettingsPage = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof SettingsSchema>) => {
-    setSuccess(undefined);
     setError(undefined);
 
     startTransition(() => {
       settings(values)
         .then((data) => {
           if (data.error) {
-            setError(data.error);
+            toast.error(data.error);
           }
+
           if (data.success) {
-            update();
-            setSuccess(data.success);
+            toast.success(data.success);
           }
 
           if (data.logout) setTimeout(logout, 700);
 
           revalidate();
         })
-        .catch(() => setError("Something went wrong!"));
+        .catch((err: { error: string }) => setError(err.error));
     });
   };
 
@@ -215,7 +213,6 @@ const SettingsPage = () => {
                   />
                 )}
               </div>
-              <FormSuccess message={success} />
               <FormError message={error} />
               <Button type="submit">Save</Button>
             </form>
