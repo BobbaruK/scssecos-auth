@@ -12,7 +12,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     from: "Acme <onboarding@resend.dev>",
     to: email,
     subject: "Confirm email",
-    react: EmailTemplate({ firstName: email, confirmLink }),
+    react: await EmailTemplate({ firstName: email, confirmLink }),
   });
 };
 
@@ -23,7 +23,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
     from: "Acme <onboarding@resend.dev>",
     to: email,
     subject: "Reset Password",
-    react: EmailTemplate({
+    react: await EmailTemplate({
       firstName: email,
       confirmLink: resetlink,
       action: "reset",

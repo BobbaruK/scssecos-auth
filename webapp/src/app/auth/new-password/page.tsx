@@ -1,9 +1,9 @@
 import { NewPasswordForm } from "@/features/auth/components";
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     token: string;
-  };
+  }>;
 }
 
 const NewPasswordPage = async ({ searchParams }: Props) => {

@@ -1,9 +1,9 @@
 import { NewVerificationForm } from "@/features/auth/components";
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     token: string;
-  };
+  }>;
 }
 
 const NewVerificationPage = async ({ searchParams }: Props) => {
