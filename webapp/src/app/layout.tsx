@@ -1,11 +1,11 @@
+import { auth } from "@/auth";
 import Header from "@/components/header";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
+import { FactoriesSessionProvider } from "@/providers/session-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { auth } from "@/auth";
-import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,23 +34,23 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionProvider session={session}>
+        <FactoriesSessionProvider session={session}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-            <div className="grid-rows-siteGrid grid min-h-[100vh] gap-10">
+            <div className="grid min-h-[100vh] grid-rows-siteGrid gap-10">
               <Header />
               <main>{children}</main>
               <footer>
                 <div className="container">footer</div>
               </footer>
             </div>
-            <Toaster />
+            <Toaster richColors closeButton />
           </ThemeProvider>
-        </SessionProvider>
+        </FactoriesSessionProvider>
       </body>
     </html>
   );
