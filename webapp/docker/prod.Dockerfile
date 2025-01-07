@@ -27,7 +27,7 @@ COPY postcss.config.mjs .
 COPY tailwind.config.ts .
 COPY tsconfig.json .
 
-# RUN npx prisma generate
+RUN npx prisma generate
 
 # Environment variables must be present at build time
 # https://github.com/vercel/next.js/discussions/14030
