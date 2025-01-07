@@ -78,7 +78,7 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     return {
       success: "Settings Updated!",
     };
-  } catch (error) {
+  } catch {
     return {
       error: "Something went wrong!",
     };

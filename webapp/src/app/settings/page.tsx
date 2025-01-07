@@ -23,16 +23,15 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { userRoles } from "@/constants";
 import { logout } from "@/features/auth/actions";
-import { FormError, FormSuccess } from "@/features/auth/components";
+import { FormError } from "@/features/auth/components";
 import { useCurrentUser } from "@/features/auth/hooks";
 import { settings } from "@/features/settings/actions";
 import { SettingsSchema } from "@/features/settings/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { toast } from "sonner";
+import { z } from "zod";
 
 const SettingsPage = () => {
   const user = useCurrentUser();
