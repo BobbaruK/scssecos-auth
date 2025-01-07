@@ -20,11 +20,9 @@ const AdminPage = () => {
 
   const onServerActionClick = () => {
     admin().then((data) => {
-      if (data.success) {
-        toast.success("Allow Server Action!");
-      } else {
-        toast.error("Forbidden Server Action!");
-      }
+      if (data.success) toast.success(data.success);
+
+      if (data.error) toast.error(data.error);
     });
   };
 

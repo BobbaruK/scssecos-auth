@@ -7,8 +7,8 @@ export const admin = async () => {
   const role = await currentRole();
 
   if (role === UserRole.ADMIN) {
-    return { success: "Allowed!" };
+    return { success: "Allow server action!" };
   }
 
-  return { error: "Forbidden!" };
+  return { error: "Forbidden server action!" };
 };
