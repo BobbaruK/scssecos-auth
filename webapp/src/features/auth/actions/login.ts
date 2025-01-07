@@ -17,7 +17,6 @@ import {
   sendVerificationEmail,
 } from "../lib";
 import { LoginSchema } from "../schemas";
-import { DEFAULT_LOGIN_REDIRECT } from "@/constants";
 
 /**
  * **{@linkcode login} server function**
@@ -52,10 +51,7 @@ import { DEFAULT_LOGIN_REDIRECT } from "@/constants";
  * @yields Returns a `Promise` that returns an `Object` with success and error messages and if 2FA is active
  *
  */
-export const login = async (
-  values: z.infer<typeof LoginSchema>,
-  callbackUrl?: string,
-) => {
+export const login = async (values: z.infer<typeof LoginSchema>) => {
   // 1
   const validatedFields = LoginSchema.safeParse(values);
 
@@ -86,7 +82,7 @@ export const login = async (
     );
 
     // 6.3
-    return { success: "Confirmation email sent!" };
+    return { success: "Confirmation email sent!", emailSent: true };
   }
 
   const passwordMatch = await bcrypt.compare(
@@ -158,8 +154,12 @@ export const login = async (
     await signIn("credentials", {
       email,
       password,
-      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+      redirect: false,
     });
+
+    return {
+      success: "You have been signed in successfully!",
+    };
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {

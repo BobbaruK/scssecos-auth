@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -20,6 +21,8 @@ import { LoginSchema } from "../schemas";
 import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
+import { toast } from "sonner";
+import { DEFAULT_LOGIN_REDIRECT } from "@/constants";
 
 interface Props {
   searchParamError?: string;
@@ -36,6 +39,7 @@ export const LoginForm = ({ searchParamError, callbackUrl }: Props) => {
   const [showTwoFactor, setShowTwoFactor] = useState(false);
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -51,46 +55,34 @@ export const LoginForm = ({ searchParamError, callbackUrl }: Props) => {
     setSuccess("");
 
     startTransition(() => {
-      login(values, callbackUrl)
+      login(values)
         .then((data) => {
-          console.log("dsadsads");
-          console.log(data);
-          // setError(data?.error);
-          // setSuccess(data?.success);
-
           if (data?.error) {
             form.reset();
             setError(data.error);
+            toast.error(data.error);
           }
 
           if (data?.success) {
             form.reset();
-            setSuccess(data.success);
+
+            if (data.emailSent) {
+              setSuccess(data.success);
+            } else {
+              toast.success(data.success);
+            }
+
+            router.push(callbackUrl || DEFAULT_LOGIN_REDIRECT);
           }
 
           if (data?.twoFactor) {
             setShowTwoFactor(true);
           }
-
-          // if succesfuly log in data is undefined
-          if (!data) {
-            /**
-             * This is a workaround.
-             *
-             * For some reason when I login or logout from a server function
-             * the SessionProvider is not updating. Works fine if I logout or
-             * login from client function like: signOut from "next-auth/react".
-             *
-             * Hopefully auth.js will get out of beta soon(today is 3th of Sept 2024).
-             *
-             */
-            // TODO: check out auth js for further documentation
-            setTimeout(() => location.reload(), 300);
-          }
         })
         .catch(() => setError("Something went wrong!"));
     });
   };
+
   return (
     <>
       <CardWrapper
