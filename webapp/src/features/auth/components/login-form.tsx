@@ -60,7 +60,6 @@ export const LoginForm = ({ searchParamError, callbackUrl }: Props) => {
           if (data?.error) {
             form.reset();
             setError(data.error);
-            toast.error(data.error);
           }
 
           if (data?.success) {
