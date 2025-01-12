@@ -11,14 +11,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 import { newPassword } from "../actions";
 import { NewPasswordSchema } from "../schemas";
 import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";
-import { FormSuccess } from "./form-success";
 
 interface Props {
   searchParamToken: string;
@@ -27,7 +28,7 @@ interface Props {
 export const NewPasswordForm = ({ searchParamToken }: Props) => {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
-  const [success, setSuccess] = useState<string | undefined>("");
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof NewPasswordSchema>>({
     resolver: zodResolver(NewPasswordSchema),
@@ -38,12 +39,17 @@ export const NewPasswordForm = ({ searchParamToken }: Props) => {
 
   const onSubmit = (values: z.infer<typeof NewPasswordSchema>) => {
     setError("");
-    setSuccess("");
 
     startTransition(() => {
       newPassword(values, searchParamToken).then((data) => {
-        setError(data?.error);
-        setSuccess(data?.success);
+        if (data.success) {
+          toast.success(data.success);
+          router.push("/auth/login");
+        }
+
+        if (data.error) {
+          setError(data.error);
+        }
       });
     });
   };
@@ -76,7 +82,6 @@ export const NewPasswordForm = ({ searchParamToken }: Props) => {
             />
           </div>
           <FormError message={error} />
-          <FormSuccess message={success} />
           <Button type="submit" className="w-full" disabled={isPending}>
             Reset password
           </Button>
