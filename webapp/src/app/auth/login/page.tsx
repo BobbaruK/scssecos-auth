@@ -13,8 +13,8 @@ const LoginPage = async ({ searchParams }: Props) => {
   return (
     <div className="container grid h-full place-items-center">
       <LoginForm
-        searchParamError={error || ""}
-        callbackUrl={callbackUrl || ""}
+        searchParamError={error}
+        callbackUrl={callbackUrl}
       />
     </div>
   );

@@ -4,6 +4,15 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+/**
+ * from what I've noticed:
+ * - in psql if a table name contains an upper case character
+ * you have to select it with ""
+ * SELECT * FROM user;   ✔️
+ * SELECT * FROM "User";   ✔️
+ * SELECT * FROM User;     ❌
+ */
+
 generator client {
   provider = "prisma-client-js"
 }
