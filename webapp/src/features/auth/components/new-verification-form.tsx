@@ -6,6 +6,8 @@ import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 import { newVerification } from "../actions/new-verification";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface Props {
   searchParamToken: string;
@@ -13,7 +15,8 @@ interface Props {
 
 export const NewVerificationForm = ({ searchParamToken }: Props) => {
   const [error, setError] = useState<string | undefined>("");
-  const [success, setSuccess] = useState<string | undefined>("");
+  const [success] = useState<string | undefined>("");
+  const router = useRouter();
 
   const onSubmit = useCallback(() => {
     if (success || error) return;
@@ -25,13 +28,19 @@ export const NewVerificationForm = ({ searchParamToken }: Props) => {
 
     newVerification(searchParamToken)
       .then((data) => {
-        setSuccess(data.success);
-        setError(data.error);
+        if (data.success) {
+          toast.success(data.success);
+          router.push("/auth/login");
+        }
+
+        if (data.error) {
+          setError(data.error);
+        }
       })
       .catch(() => {
         setError("Something went wrong!");
       });
-  }, [searchParamToken, success, error]);
+  }, [searchParamToken, success, error, router]);
 
   useEffect(() => {
     onSubmit();
