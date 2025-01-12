@@ -10,19 +10,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { DEFAULT_LOGIN_REDIRECT } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 import { login } from "../actions";
 import { LoginSchema } from "../schemas";
 import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
-import { toast } from "sonner";
-import { DEFAULT_LOGIN_REDIRECT } from "@/constants";
 
 interface Props {
   searchParamError?: string;
@@ -57,14 +57,11 @@ export const LoginForm = ({ searchParamError, callbackUrl }: Props) => {
     startTransition(() => {
       login(values)
         .then((data) => {
-          if (data?.error) {
-            form.reset();
+          if (data.error) {
             setError(data.error);
           }
 
-          if (data?.success) {
-            form.reset();
-
+          if (data.success) {
             if (data.emailSent) {
               setSuccess(data.success);
             } else {

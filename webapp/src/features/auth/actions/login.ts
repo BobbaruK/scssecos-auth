@@ -18,159 +18,108 @@ import {
 } from "../lib";
 import { LoginSchema } from "../schemas";
 
+type LoginResponse =
+  | { error: string; success?: undefined; emailSent?: undefined; twoFactor?: undefined }
+  | { success: string; emailSent: boolean; error?: undefined; twoFactor?: undefined }
+  | { twoFactor: boolean; error?: undefined; success?: undefined; emailSent?: undefined }
+  | { success: string; error?: undefined; emailSent?: undefined; twoFactor?: undefined };
+
+// Centralize messages
+const MESSAGES = {
+  INVALID_FIELDS: "Invalid fields!",
+  EMAIL_NOT_EXIST: "Email does not exist!",
+  INVALID_CREDENTIALS: "Invalid credentials!",
+  EMAIL_NOT_VERIFIED: "Confirmation email sent!",
+  INVALID_CODE: "Invalid code!",
+  CODE_EXPIRED: "Code expired!",
+  SIGN_IN_SUCCESS: "You have been signed in successfully!",
+  UNKNOWN_ERROR: "Something went wrong!",
+};
+
 /**
- * **{@linkcode login} server function**
- *
- * 1. Safeparse the values
- * 2. If it is not success return `{ error: "Invalid fields!" }`
- * 3. Deconstruct the values
- * 4. Fetch existing user from the database. See {@linkcode getUserByEmail}.
- * 5. Check if *user*, *user email* and *user password* exists. If not return `{ error: "Email does not exist!" }`
- * 6. Check if email is  __not__ verified
- *    1. Generate verification token by the users email. See {@linkcode generateVerificationToken}
- *    2. Send verification email. See {@linkcode sendVerificationEmail}
- *    3. return `{ success: "Confirmation email sent!" }`
- * 7. Check if users 2FA is enabled __and__ if user has an email
- *    1. Check if _code_ exists
- *       1. Get 2FA Token by email. See {@linkcode getTwoFactorTokenByEmail}
- *       2. If 2FA is null return `{ error: "Invalid code!" }`
- *       3. If the token received is not the same as the code return `{ error: "Invalid code!" }`
- *       4. Check if the code has expired. If _true_ return `{ error: "Code expired!" }`
- *       5. Remove the 2FA Token from the database
- *       6. Get 2FA Confirmation by users id. See {@linkcode getTwoFactorConfirmatioByUserId}
- *       7. Check if 2FA Confirmation exist. If _true_ it will be deleted from the database
- *       8. Create 2FA Confirmation in the database where `userId` is users id
- *    2. If _code_ does not exist
- *       1. Generate 2FA Token. See {@linkcode generateTwoFactorToken}
- *       2. Send 2FA Token email. See {@linkcode sendTwoFactorTokenEmail}
- *       3. return `{ twoFactor: true }`
- * 8. Try and sign in, see {@linkcode signIn}, and then catch the error
- *
- * @tutorial https://zod.dev/?id=safeparse
- * @param values {@linkcode LoginSchema}
- * @yields Returns a `Promise` that returns an `Object` with success and error messages and if 2FA is active
- *
+ * Handle email verification
  */
-export const login = async (values: z.infer<typeof LoginSchema>) => {
-  // 1
+const handleEmailVerification = async (email: string): Promise<LoginResponse> => {
+  const verificationToken = await generateVerificationToken(email);
+  await sendVerificationEmail(verificationToken.email, verificationToken.token);
+  return { success: MESSAGES.EMAIL_NOT_VERIFIED, emailSent: true };
+};
+
+/**
+ * Handle two-factor authentication (2FA)
+ */
+const handleTwoFactorAuthentication = async (
+  email: string,
+  userId: string,
+  code?: string
+): Promise<LoginResponse> => {
+  if (code) {
+    const twoFactorToken = await getTwoFactorTokenByEmail(email);
+
+    if (!twoFactorToken || twoFactorToken.token !== code) {
+      return { error: MESSAGES.INVALID_CODE };
+    }
+
+    if (new Date(twoFactorToken.expires) < new Date()) {
+      return { error: MESSAGES.CODE_EXPIRED };
+    }
+
+    await db.twoFactorToken.delete({ where: { id: twoFactorToken.id } });
+
+    const existingConfirmation = await getTwoFactorConfirmatioByUserId(userId);
+    if (existingConfirmation) {
+      await db.twoFactorConfirmation.delete({ where: { id: existingConfirmation.id } });
+    }
+
+    await db.twoFactorConfirmation.create({ data: { userId } });
+    return { success: MESSAGES.SIGN_IN_SUCCESS }; // Optionally, return success after 2FA is confirmed
+  } else {
+    const twoFactorToken = await generateTwoFactorToken(email);
+    await sendTwoFactorTokenEmail(twoFactorToken.email, twoFactorToken.token);
+    return { twoFactor: true };
+  }
+};
+
+/**
+ * Main login function
+ */
+export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginResponse> => {
   const validatedFields = LoginSchema.safeParse(values);
+  if (!validatedFields.success) return { error: MESSAGES.INVALID_FIELDS };
 
-  // 2
-  if (!validatedFields.success) return { error: "Invalid fields!" };
-
-  // 3
   const { email, password, code } = validatedFields.data;
 
-  // 4
   const existingUser = await getUserByEmail(email);
+  if (!existingUser || !existingUser.email || !existingUser.password) {
+    return { error: MESSAGES.EMAIL_NOT_EXIST };
+  }
 
-  // 5
-  if (!existingUser || !existingUser.email || !existingUser.password)
-    return { error: "Email does not exist!" };
-
-  // 6
   if (!existingUser.emailVerified) {
-    // 6.1
-    const verificationToken = await generateVerificationToken(
+    return await handleEmailVerification(existingUser.email);
+  }
+
+  const passwordMatch = await bcrypt.compare(password, existingUser.password);
+  if (!passwordMatch) return { error: MESSAGES.INVALID_CREDENTIALS };
+
+  if (existingUser.isTwoFactorEnabled) {
+    const twoFactorResult = await handleTwoFactorAuthentication(
       existingUser.email,
+      existingUser.id,
+      code
     );
-
-    // 6.2
-    await sendVerificationEmail(
-      verificationToken.email,
-      verificationToken.token,
-    );
-
-    // 6.3
-    return { success: "Confirmation email sent!", emailSent: true };
-  }
-
-  const passwordMatch = await bcrypt.compare(
-    values.password,
-    existingUser.password,
-  );
-
-  if (!passwordMatch) return { error: "Invalid credentials!" };
-
-  // 7
-  if (existingUser.isTwoFactorEnabled && existingUser.email) {
-    // 7.1
-    if (code) {
-      // 7.1.1
-      const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email);
-
-      // 7.1.2
-      if (!twoFactorToken) return { error: "Invalid code!" };
-
-      // 7.1.3
-      if (twoFactorToken.token !== code) return { error: "Invalid code!" };
-
-      // 7.1.4
-      const hasExpired = new Date(twoFactorToken.expires) < new Date();
-
-      if (hasExpired) return { error: "Code expired!" };
-
-      // 7.1.5
-      await db.twoFactorToken.delete({
-        where: {
-          id: twoFactorToken.id,
-        },
-      });
-
-      // 7.1.6
-      const existingConfirmation = await getTwoFactorConfirmatioByUserId(
-        existingUser.id,
-      );
-
-      // 7.1.7
-      if (existingConfirmation)
-        await db.twoFactorConfirmation.delete({
-          where: {
-            id: existingConfirmation.id,
-          },
-        });
-
-      // 7.1.8
-      await db.twoFactorConfirmation.create({
-        data: {
-          userId: existingUser.id,
-        },
-      });
-    } else {
-      // 7.2
-      // 7.2.1
-      const twoFactorToken = await generateTwoFactorToken(existingUser.email);
-
-      // 7.2.2
-      await sendTwoFactorTokenEmail(twoFactorToken.email, twoFactorToken.token);
-
-      // 7.2.3
-      return { twoFactor: true };
+    if (twoFactorResult.error || twoFactorResult.twoFactor) {
+      return twoFactorResult;
     }
   }
 
-  // 8
   try {
-    await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    return {
-      success: "You have been signed in successfully!",
-    };
+    await signIn("credentials", { email, password, redirect: false });
+    return { success: MESSAGES.SIGN_IN_SUCCESS };
   } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return { error: "Invalid credentials!" };
-
-        default:
-          return { error: "Something went wrong!" };
-      }
+    if (error instanceof AuthError && error.type === "CredentialsSignin") {
+      return { error: MESSAGES.INVALID_CREDENTIALS };
     }
-
-    throw error;
+    console.error("Sign-in error:", error);
+    return { error: MESSAGES.UNKNOWN_ERROR };
   }
 };
