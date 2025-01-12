@@ -10,6 +10,17 @@ type NewPasswordResponse =
   | { error: string; success?: undefined }
   | { success: string; error?: undefined };
 
+// Centralized messages in ALL_CAPS
+const MESSAGES = {
+  MISSING_TOKEN: "Missing token!",
+  INVALID_FIELDS: "Invalid fields!",
+  INVALID_TOKEN: "Invalid token!",
+  TOKEN_EXPIRED: "Token has expired!",
+  EMAIL_NOT_EXIST: "Email does not exist!",
+  PASSWORD_UPDATED: "Password updated!",
+  GENERIC_ERROR: "Something went wrong!",
+};
+
 /**
  * **{@linkcode newPassword} server function**
  *
@@ -24,12 +35,12 @@ export const newPassword = async (
   token: string | null
 ): Promise<NewPasswordResponse> => {
   // 1. Check for missing token
-  if (!token) return { error: "Missing token!" };
+  if (!token) return { error: MESSAGES.MISSING_TOKEN };
 
   // 2. Validate the input
   const validatedFields = NewPasswordSchema.safeParse(values);
   if (!validatedFields.success || !validatedFields.data) {
-    return { error: "Invalid fields!" };
+    return { error: MESSAGES.INVALID_FIELDS };
   }
 
   // 3. Destructure the validated password
@@ -37,15 +48,15 @@ export const newPassword = async (
 
   // 4. Retrieve the reset token
   const existingToken = await getPasswordResetTokenByToken(token);
-  if (!existingToken) return { error: "Invalid token!" };
+  if (!existingToken) return { error: MESSAGES.INVALID_TOKEN };
 
   // 5. Check if the token has expired
   const hasExpired = new Date(existingToken.expires) < new Date();
-  if (hasExpired) return { error: "Token has expired!" };
+  if (hasExpired) return { error: MESSAGES.TOKEN_EXPIRED };
 
   // 6. Retrieve the user by email
   const existingUser = await getUserByEmail(existingToken.email);
-  if (!existingUser) return { error: "Email does not exist!" };
+  if (!existingUser) return { error: MESSAGES.EMAIL_NOT_EXIST };
 
   // 7. Hash the new password
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -63,11 +74,11 @@ export const newPassword = async (
     });
 
     // 10. Return success message
-    return { success: "Password updated!" };
+    return { success: MESSAGES.PASSWORD_UPDATED };
   } catch (error) {
     console.error("Error updating password:", error);
 
     // Return a generic error message
-    return { error: "Something went wrong!" };
+    return { error: MESSAGES.GENERIC_ERROR };
   }
 };
