@@ -63,9 +63,9 @@ const SettingsPage = () => {
 
           if (data.success) {
             toast.success(data.success);
-          }
 
-          if (data.logout) setTimeout(logout, 700);
+            if (data.logout) logout();
+          }
 
           revalidate();
         })
