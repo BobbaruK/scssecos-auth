@@ -5,50 +5,52 @@ import { getUserByEmail } from "../data";
 import { generatePasswordResetToken, sendPasswordResetEmail } from "../lib";
 import { ResetSchema } from "../schemas";
 
+const MESSAGES = {
+  INVALID_EMAIL: "Invalid email!",
+  EMAIL_NOT_FOUND: "Email not found!",
+  RESET_EMAIL_SENT: "Reset email sent!",
+  GENERIC_ERROR: "Something went wrong!",
+};
+
 /**
  * **{@linkcode reset} server function**
  *
- * 1. Safeparse the values
- * 2. If _validatedFields_ does not exist __or__ _validatedFields.data_ is __undefined__ return `{ error: "Invalid email!" }`
- * 3. Deconstruct the values
- * 4. Get user by email. See {@linkcode getUserByEmail}
- * 5. If user does __not__ exists return `{ error: "Email not found!" }`
- * 6. Generate password reset Token. See {@linkcode generatePasswordResetToken}
- * 7. Send password reset email. See {@linkcode generatePasswordResetToken}
- * 8. return `{ success: "Reset email sent!" }`
- *
  * @tutorial https://zod.dev/?id=safeparse
  * @param values {@linkcode ResetSchema}
- * @yields Returns a `Promise` that returns an `Object` with success and error messages
+ * @yields Returns a `Promise` with success or error messages
  */
 export const reset = async (values: z.infer<typeof ResetSchema>) => {
-  // 1
-  const validatedFields = ResetSchema.safeParse(values);
+  try {
+    // 1. Validate fields
+    const validatedFields = ResetSchema.safeParse(values);
 
-  // 2
-  if (!validatedFields || !validatedFields.data)
-    return { error: "Invalid email!" };
+    if (!validatedFields.success) {
+      return { error: MESSAGES.INVALID_EMAIL };
+    }
 
-  // 3
-  const { email } = validatedFields.data;
+    // 2. Extract email
+    const { email } = validatedFields.data;
 
-  // 4
-  const existingUser = await getUserByEmail(email);
+    // 3. Check if user exists
+    const existingUser = await getUserByEmail(email);
 
-  // 5
-  if (!existingUser) {
-    return { error: "Email not found!" };
+    if (!existingUser) {
+      return { error: MESSAGES.EMAIL_NOT_FOUND };
+    }
+
+    // 4. Generate password reset token
+    const passwordResetToken = await generatePasswordResetToken(email);
+
+    // 5. Send password reset email
+    await sendPasswordResetEmail(
+      passwordResetToken.email,
+      passwordResetToken.token,
+    );
+
+    // 6. Return success message
+    return { success: MESSAGES.RESET_EMAIL_SENT };
+  } catch (error) {
+    console.error("Error in reset function:", error);
+    return { error: MESSAGES.GENERIC_ERROR };
   }
-
-  // 6
-  const passwordResetToken = await generatePasswordResetToken(email);
-
-  // 7
-  await sendPasswordResetEmail(
-    passwordResetToken.email,
-    passwordResetToken.token,
-  );
-
-  // 8
-  return { success: "Reset email sent!" };
 };

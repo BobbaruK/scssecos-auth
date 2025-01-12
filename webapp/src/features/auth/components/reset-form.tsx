@@ -13,17 +13,18 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 import { reset } from "../actions";
 import { ResetSchema } from "../schemas";
 import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";
-import { FormSuccess } from "./form-success";
+import { useRouter } from "next/navigation";
 
 export const ResetForm = () => {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
-  const [success, setSuccess] = useState<string | undefined>("");
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof ResetSchema>>({
     resolver: zodResolver(ResetSchema),
@@ -34,12 +35,17 @@ export const ResetForm = () => {
 
   const onSubmit = (values: z.infer<typeof ResetSchema>) => {
     setError("");
-    setSuccess("");
 
     startTransition(() => {
       reset(values).then((data) => {
-        setError(data?.error);
-        setSuccess(data?.success);
+        if (data.error) {
+          setError(data?.error);
+        }
+
+        if (data.success) {
+          toast.success(data.success);
+          router.push("/");
+        }
       });
     });
   };
@@ -72,7 +78,6 @@ export const ResetForm = () => {
             />
           </div>
           <FormError message={error} />
-          <FormSuccess message={success} />
           <Button type="submit" className="w-full" disabled={isPending}>
             Send reset email
           </Button>
