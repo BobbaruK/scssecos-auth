@@ -58,7 +58,7 @@ To explore the implementation, see the ESLint configuration file [here](./eslint
 
 Below is a visual representation of the module relationships enforced by the ESLint boundaries:
 
-![scssecos-auth-eslint-boundaries](https://github.com/user-attachments/assets/6aabe2ac-c258-4c8a-ab30-084765a54cb2)
+![scssecos-auth-eslint-boundaries](https://github.com/user-attachments/assets/b35a51d7-d81a-4a01-9c0c-058c9c7b47fc)
 
 
 
