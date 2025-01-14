@@ -15,7 +15,7 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { reset } from "../actions";
+import { reset } from "../actions/reset";
 import { ResetSchema } from "../schemas";
 import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";

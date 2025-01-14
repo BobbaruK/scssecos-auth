@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { userRoles } from "@/constants";
-import { logout } from "@/features/auth/actions";
+import { logout } from "@/features/auth/actions/logout";
 import { FormError } from "@/features/auth/components";
 import { useCurrentUser } from "@/features/auth/hooks";
 import { settings } from "@/features/settings/actions";
