@@ -13,16 +13,35 @@ import {
 import {
   generateTwoFactorToken,
   generateVerificationToken,
-  sendTwoFactorTokenEmail,
-  sendVerificationEmail,
-} from "../lib";
+} from "../lib/tokens";
+import { sendVerificationEmail, sendTwoFactorTokenEmail } from "../lib/mail";
 import { LoginSchema } from "../schemas";
 
 type LoginResponse =
-  | { error: string; success?: undefined; emailSent?: undefined; twoFactor?: undefined }
-  | { success: string; emailSent: boolean; error?: undefined; twoFactor?: undefined }
-  | { twoFactor: boolean; error?: undefined; success?: undefined; emailSent?: undefined }
-  | { success: string; error?: undefined; emailSent?: undefined; twoFactor?: undefined };
+  | {
+      error: string;
+      success?: undefined;
+      emailSent?: undefined;
+      twoFactor?: undefined;
+    }
+  | {
+      success: string;
+      emailSent: boolean;
+      error?: undefined;
+      twoFactor?: undefined;
+    }
+  | {
+      twoFactor: boolean;
+      error?: undefined;
+      success?: undefined;
+      emailSent?: undefined;
+    }
+  | {
+      success: string;
+      error?: undefined;
+      emailSent?: undefined;
+      twoFactor?: undefined;
+    };
 
 // Centralize messages
 const MESSAGES = {
@@ -39,7 +58,9 @@ const MESSAGES = {
 /**
  * Handle email verification
  */
-const handleEmailVerification = async (email: string): Promise<LoginResponse> => {
+const handleEmailVerification = async (
+  email: string,
+): Promise<LoginResponse> => {
   const verificationToken = await generateVerificationToken(email);
   await sendVerificationEmail(verificationToken.email, verificationToken.token);
   return { success: MESSAGES.EMAIL_NOT_VERIFIED, emailSent: true };
@@ -51,7 +72,7 @@ const handleEmailVerification = async (email: string): Promise<LoginResponse> =>
 const handleTwoFactorAuthentication = async (
   email: string,
   userId: string,
-  code?: string
+  code?: string,
 ): Promise<LoginResponse> => {
   if (code) {
     const twoFactorToken = await getTwoFactorTokenByEmail(email);
@@ -68,7 +89,9 @@ const handleTwoFactorAuthentication = async (
 
     const existingConfirmation = await getTwoFactorConfirmatioByUserId(userId);
     if (existingConfirmation) {
-      await db.twoFactorConfirmation.delete({ where: { id: existingConfirmation.id } });
+      await db.twoFactorConfirmation.delete({
+        where: { id: existingConfirmation.id },
+      });
     }
 
     await db.twoFactorConfirmation.create({ data: { userId } });
@@ -83,7 +106,9 @@ const handleTwoFactorAuthentication = async (
 /**
  * Main login function
  */
-export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginResponse> => {
+export const login = async (
+  values: z.infer<typeof LoginSchema>,
+): Promise<LoginResponse> => {
   const validatedFields = LoginSchema.safeParse(values);
   if (!validatedFields.success) return { error: MESSAGES.INVALID_FIELDS };
 
@@ -105,7 +130,7 @@ export const login = async (values: z.infer<typeof LoginSchema>): Promise<LoginR
     const twoFactorResult = await handleTwoFactorAuthentication(
       existingUser.email,
       existingUser.id,
-      code
+      code,
     );
     if (twoFactorResult.error || twoFactorResult.twoFactor) {
       return twoFactorResult;

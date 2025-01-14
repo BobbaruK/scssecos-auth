@@ -1,11 +1,9 @@
 "use server";
 
 import { getUserByEmail, getUserById } from "@/features/auth/data";
-import {
-  currentUser,
-  generateVerificationToken,
-  sendVerificationEmail,
-} from "@/features/auth/lib";
+import { generateVerificationToken } from "@/features/auth/lib/tokens";
+import { sendVerificationEmail } from "@/features/auth/lib/mail";
+import { currentUser } from "@/features/auth/lib/auth";
 import db from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
@@ -29,14 +27,21 @@ const MESSAGES = {
 /**
  * Handle email change and send verification email
  */
-const handleEmailChange = async (email: string, userId: string, currentEmail: string): Promise<SettingsResponse> => {
+const handleEmailChange = async (
+  email: string,
+  userId: string,
+  currentEmail: string,
+): Promise<SettingsResponse> => {
   const existingUser = await getUserByEmail(email);
 
   if (existingUser && existingUser.id !== userId) {
     return { error: MESSAGES.EMAIL_IN_USE };
   }
 
-  const verificationToken = await generateVerificationToken(email, currentEmail);
+  const verificationToken = await generateVerificationToken(
+    email,
+    currentEmail,
+  );
   await sendVerificationEmail(verificationToken.email, verificationToken.token);
 
   return { success: MESSAGES.VERIFICATION_SENT, logout: true };
@@ -48,7 +53,7 @@ const handleEmailChange = async (email: string, userId: string, currentEmail: st
 const handlePasswordChange = async (
   currentPassword: string,
   newPassword: string,
-  hashedPassword: string
+  hashedPassword: string,
 ): Promise<string | SettingsResponse> => {
   const passwordMatch = await bcrypt.compare(currentPassword, hashedPassword);
 
@@ -62,7 +67,9 @@ const handlePasswordChange = async (
 /**
  * Main settings update function
  */
-export const settings = async (values: z.infer<typeof SettingsSchema>): Promise<SettingsResponse> => {
+export const settings = async (
+  values: z.infer<typeof SettingsSchema>,
+): Promise<SettingsResponse> => {
   const user = await currentUser();
   if (!user) return { error: MESSAGES.UNAUTHORIZED };
 
@@ -84,7 +91,7 @@ export const settings = async (values: z.infer<typeof SettingsSchema>): Promise<
     const newHashedPassword = await handlePasswordChange(
       values.password,
       values.newPassword,
-      dbUser.password
+      dbUser.password,
     );
 
     if (typeof newHashedPassword === "object" && "error" in newHashedPassword) {

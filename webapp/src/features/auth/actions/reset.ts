@@ -2,7 +2,8 @@
 
 import z from "zod";
 import { getUserByEmail } from "../data";
-import { generatePasswordResetToken, sendPasswordResetEmail } from "../lib";
+import { generatePasswordResetToken } from "../lib/tokens";
+import { sendPasswordResetEmail } from "../lib/mail";
 import { ResetSchema } from "../schemas";
 
 const MESSAGES = {
