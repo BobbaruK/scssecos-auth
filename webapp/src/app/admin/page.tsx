@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { admin } from "@/features/auth/actions/admin";
-import { FormSuccess, RoleGate } from "@/features/auth/components";
+import { FormSuccess,  } from "@/features/auth/components/form-success";
+import { RoleGate } from "@/features/auth/components/role-gate";
 import { UserRole } from "@prisma/client";
 import { toast } from "sonner";
 

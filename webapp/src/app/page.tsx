@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { LoginButton } from "@/features/auth/components";
+import { LoginButton } from "@/features/auth/components/login-button";
 import { currentUser } from "@/features/auth/lib/auth";
 
 export default async function Home() {

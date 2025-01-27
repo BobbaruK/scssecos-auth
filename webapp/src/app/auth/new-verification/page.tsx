@@ -1,4 +1,4 @@
-import { NewVerificationForm } from "@/features/auth/components";
+import { NewVerificationForm } from "@/features/auth/components/new-verification-form";
 
 interface Props {
   searchParams: Promise<{

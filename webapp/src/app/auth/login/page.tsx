@@ -1,4 +1,4 @@
-import { LoginForm } from "@/features/auth/components";
+import { LoginForm } from "@/features/auth/components/login-form";
 
 interface Props {
   searchParams: Promise<{
