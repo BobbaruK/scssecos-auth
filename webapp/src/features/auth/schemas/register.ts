@@ -3,7 +3,7 @@ import {
   MAX_USERNAME,
   MIN_PASSWORD,
   MIN_USERNAME,
-} from "@/constants";
+} from "@/constants/misc";
 import { passwordRefine } from "@/lib/utils";
 import { z } from "zod";
 

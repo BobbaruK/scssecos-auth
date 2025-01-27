@@ -21,9 +21,3 @@ export const MIN_USERNAME = 2;
  * @type {number}
  */
 export const MAX_USERNAME = 20;
-
-/**
- * How many miliseconds a toast stays on the screen
- * @type {number}
- */
-export const TOAST_DURATION = 3500; // ms

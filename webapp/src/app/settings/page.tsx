@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { userRoles } from "@/constants";
+import { userRoles } from "@/constants/user-roles";
 import { logout } from "@/features/auth/actions/logout";
 import { FormError } from "@/features/auth/components";
 import { useCurrentUser } from "@/features/auth/hooks";

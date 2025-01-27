@@ -1,4 +1,4 @@
-import { MAX_PASSWORD, MIN_PASSWORD } from "@/constants";
+import { MAX_PASSWORD, MIN_PASSWORD } from "@/constants/misc";
 import { passwordRefine } from "@/lib/utils";
 import { z } from "zod";
 

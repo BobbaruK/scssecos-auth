@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { DEFAULT_LOGIN_REDIRECT } from "@/constants";
+import { DEFAULT_LOGIN_REDIRECT } from "@/constants/routes";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { FaGithub } from "react-icons/fa";

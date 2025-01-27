@@ -1,4 +1,5 @@
-import { MAX_PASSWORD, MIN_PASSWORD, userRoles } from "@/constants";
+import { MAX_PASSWORD, MIN_PASSWORD } from "@/constants/misc";
+import { userRoles } from "@/constants/user-roles";
 import { passwordRefine } from "@/lib/utils";
 import { z } from "zod";
 
