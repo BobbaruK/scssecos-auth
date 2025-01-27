@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import z from "zod";
 import { getPasswordResetTokenByToken } from "../data/password-reset-token";
 import { getUserByEmail } from "../data/user";
-import { NewPasswordSchema } from "../schemas";
+import { NewPasswordSchema } from "../schemas/new-password";
 
 type NewPasswordResponse =
   | { error: string; success?: undefined }

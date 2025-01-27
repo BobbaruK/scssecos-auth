@@ -4,7 +4,7 @@ import z from "zod";
 import { getUserByEmail } from "../data/user";
 import { generatePasswordResetToken } from "../lib/tokens";
 import { sendPasswordResetEmail } from "../lib/mail";
-import { ResetSchema } from "../schemas";
+import { ResetSchema } from "../schemas/reset-password";
 
 const MESSAGES = {
   INVALID_EMAIL: "Invalid email!",

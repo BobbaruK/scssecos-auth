@@ -13,7 +13,7 @@ import {
   generateVerificationToken,
 } from "../lib/tokens";
 import { sendVerificationEmail, sendTwoFactorTokenEmail } from "../lib/mail";
-import { LoginSchema } from "../schemas";
+import { LoginSchema } from "../schemas/login";
 
 type LoginResponse =
   | {

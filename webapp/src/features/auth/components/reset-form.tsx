@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { reset } from "../actions/reset";
-import { ResetSchema } from "../schemas";
+import { ResetSchema } from "../schemas/reset-password";
 import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";
 import { useRouter } from "next/navigation";

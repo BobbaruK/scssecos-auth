@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { register } from "../actions/register";
-import { RegisterSchema } from "../schemas";
+import { RegisterSchema } from "../schemas/register";
 import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";
 

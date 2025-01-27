@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { newPassword } from "../actions/new-password";
-import { NewPasswordSchema } from "../schemas";
+import { NewPasswordSchema } from "../schemas/new-password";
 import { CardWrapper } from "./card-wrapper";
 import { FormError } from "./form-error";
 
