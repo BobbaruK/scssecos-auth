@@ -7,7 +7,7 @@ import { currentUser } from "@/features/auth/lib/auth";
 import db from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { SettingsSchema } from "../schemas";
+import { SettingsSchema } from "../schemas/settings";
 
 type SettingsResponse =
   | { error: string; success?: undefined; logout?: undefined }
