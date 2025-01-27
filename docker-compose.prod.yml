@@ -12,7 +12,7 @@ services:
         DB_HOST: ${DB_HOST}
         DB_PORT: ${DB_PORT}
         DB_NAME: ${DB_NAME}
-        DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public"
+        DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public
         NEXT_PUBLIC_DEFAULT_REGISTER_PASSWORD: ${NEXT_PUBLIC_DEFAULT_REGISTER_PASSWORD}
         AUTH_SECRET: ${AUTH_SECRET}
         AUTH_TRUST_HOST: ${AUTH_TRUST_HOST}
@@ -31,7 +31,7 @@ services:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
       DB_NAME: ${DB_NAME}
-      DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public"
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public
       NEXT_PUBLIC_DEFAULT_REGISTER_PASSWORD: ${NEXT_PUBLIC_DEFAULT_REGISTER_PASSWORD}
       AUTH_SECRET: ${AUTH_SECRET}
       AUTH_TRUST_HOST: ${AUTH_TRUST_HOST}
@@ -57,6 +57,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       TZ: Europe/Bucharest
     ports:
-      - "5432:5432"
+      - 5432:5432
     volumes:
       - ./db:/var/lib/postgresql/data
