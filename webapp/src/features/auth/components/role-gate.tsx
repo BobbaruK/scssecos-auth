@@ -1,8 +1,7 @@
-
 import { UserRole } from "@prisma/client";
 import { ReactNode } from "react";
 import { FormError } from "./form-error";
-import { useCurrentRole } from "../hooks";
+import { useCurrentRole } from "../hooks/use-current-role";
 
 interface Props {
   children: ReactNode;

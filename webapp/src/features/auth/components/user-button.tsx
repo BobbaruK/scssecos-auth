@@ -17,7 +17,7 @@ import { useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { IoIosLogIn } from "react-icons/io";
 import { IoExitOutline, IoSettingsOutline } from "react-icons/io5";
-import { useCurrentUser } from "../hooks";
+import { useCurrentUser } from "../hooks/use-current-user";
 import { LoginButton } from "./login-button";
 import { LogoutButton } from "./logout-button";
 

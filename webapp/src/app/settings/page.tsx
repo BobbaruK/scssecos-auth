@@ -24,7 +24,7 @@ import { Switch } from "@/components/ui/switch";
 import { userRoles } from "@/constants/user-roles";
 import { logout } from "@/features/auth/actions/logout";
 import { FormError } from "@/features/auth/components/form-error";
-import { useCurrentUser } from "@/features/auth/hooks";
+import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import { settings } from "@/features/settings/actions";
 import { SettingsSchema } from "@/features/settings/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
