@@ -1,4 +1,4 @@
-import { getUserByEmail } from "@/features/auth/data";
+import { getUserByEmail } from "@/features/auth/data/user";
 import bcrypt from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";

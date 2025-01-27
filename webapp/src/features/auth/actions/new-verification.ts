@@ -1,7 +1,8 @@
 "use server";
 
 import db from "@/lib/db";
-import { getUserByEmail, getVerificationTokenByToken } from "../data";
+import { getUserByEmail } from "../data/user";
+import { getVerificationTokenByToken } from "../data/verification-token";
 
 const MESSAGES = {
   TOKEN_NOT_FOUND: "Token does not exist!",

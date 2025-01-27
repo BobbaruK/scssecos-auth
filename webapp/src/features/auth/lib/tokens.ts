@@ -1,4 +1,6 @@
-import { getPasswordResetTokenByEmail, getTwoFactorTokenByEmail, getVerificationTokenByEmail } from "@/features/auth/data";
+import { getPasswordResetTokenByEmail } from "@/features/auth/data/password-reset-token";
+import { getTwoFactorTokenByEmail } from "@/features/auth/data/two-factor-token";
+import { getVerificationTokenByEmail } from "@/features/auth/data/verification-token";
 import db from "@/lib/db";
 import crypto from "crypto";
 import { v4 as uuidv4 } from "uuid";

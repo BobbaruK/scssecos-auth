@@ -1,10 +1,8 @@
 import { revalidate } from "@/actions/reavalidate";
 import authConfig from "@/auth.config";
-import {
-  getAccountByUserId,
-  getTwoFactorConfirmatioByUserId,
-  getUserById,
-} from "@/features/auth/data";
+import { getAccountByUserId } from "@/features/auth/data/account";
+import { getUserById } from "@/features/auth/data/user";
+import { getTwoFactorConfirmatioByUserId } from "@/features/auth/data/two-factor-confirmation";
 import db from "@/lib/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { UserRole } from "@prisma/client";

@@ -3,7 +3,8 @@
 import db from "@/lib/db";
 import bcrypt from "bcryptjs";
 import z from "zod";
-import { getPasswordResetTokenByToken, getUserByEmail } from "../data";
+import { getPasswordResetTokenByToken } from "../data/password-reset-token";
+import { getUserByEmail } from "../data/user";
 import { NewPasswordSchema } from "../schemas";
 
 type NewPasswordResponse =
@@ -32,7 +33,7 @@ const MESSAGES = {
  */
 export const newPassword = async (
   values: z.infer<typeof NewPasswordSchema>,
-  token: string | null
+  token: string | null,
 ): Promise<NewPasswordResponse> => {
   // 1. Check for missing token
   if (!token) return { error: MESSAGES.MISSING_TOKEN };

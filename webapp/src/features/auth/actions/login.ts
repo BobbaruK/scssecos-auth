@@ -5,11 +5,9 @@ import db from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import z from "zod";
-import {
-  getTwoFactorConfirmatioByUserId,
-  getTwoFactorTokenByEmail,
-  getUserByEmail,
-} from "../data";
+import { getTwoFactorConfirmatioByUserId } from "../data/two-factor-confirmation";
+import { getTwoFactorTokenByEmail } from "../data/two-factor-token";
+import { getUserByEmail } from "../data/user";
 import {
   generateTwoFactorToken,
   generateVerificationToken,
